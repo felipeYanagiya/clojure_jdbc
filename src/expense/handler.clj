@@ -2,7 +2,28 @@
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
             [clojure.java.jdbc :as jdbc]
+            [hikari-cp.core :refer :all]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
+
+(def datasource-options {:auto-commit        true
+                         :read-only          false
+                         :connection-timeout 30000
+                         :validation-timeout 5000
+                         :idle-timeout       600000
+                         :max-lifetime       1800000
+                         :minimum-idle       10
+                         :maximum-pool-size  10
+                         :pool-name          "db-salsixa-pool"
+                         :adapter            "postgresql"
+                         :username           "postgres"
+                         :password           "postgres"
+                         :database-name      "clojure_test"
+                         :server-name        "localhost"
+                         :port-number        5432
+                         :register-mbeans    false})
+
+(def datasource
+  (make-datasource datasource-options))
 
 (def db-spec
   {:dbtype "postgresql"
@@ -18,7 +39,10 @@
                                               [(salsixa-table)]))
 
 (defn salsixa []
-  (salsixa-command))
+  (jdbc/with-db-connection [conn {:datasource datasource}]
+    (let [rows (jdbc/query conn "SELECT * FROM salsixa")]
+      (println rows)))
+  (close-datasource datasource))
 
 (defroutes app-routes
   (GET "/" [] (salsixa))

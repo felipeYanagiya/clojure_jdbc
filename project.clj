@@ -5,6 +5,7 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [compojure "1.5.1"]
                  [org.clojure/java.jdbc "0.7.3"]
+                 [hikari-cp "1.8.3"]
                  [org.postgresql/postgresql "42.1.4"]
                  [ragtime "0.7.2"]
                  [ring/ring-defaults "0.2.1"]]
